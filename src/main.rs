@@ -27,6 +27,7 @@ struct NonogramsApp {
 }
 
 impl NonogramsApp {
+    /// 构建函数
     fn new() -> Self {
         let grid_size = 5;
         let mut app = Self {
@@ -42,17 +43,17 @@ impl NonogramsApp {
         app
     }
 
-    //生成谜底
+    /// 生成谜底
     fn generate_puzzle(&mut self) {
         // 清空玩家网格
         self.player_grid = vec![vec![CellState::Empty; self.grid_size]; self.grid_size];
         self.game_won = false;
 
-        // 随机生成答案
-        let mut rng = rand::thread_rng();
+        // 生成随机答案
+        let mut rng = rand::rng();
         for i in 0..self.grid_size {
             for j in 0..self.grid_size {
-                self.solution_grid[i][j] = if rng.gen_bool(0.5) {
+                self.solution_grid[i][j] = if rng.random_bool(0.5) {
                     CellState::Filled
                 } else {
                     CellState::Empty
@@ -60,15 +61,16 @@ impl NonogramsApp {
             }
         }
 
-        // 计算行和列的提示数字（基于答案）
+        // 基于答案计算行和列的提示数字
         self.calculate_clues();
     }
 
+    /// 计算提示数字
     fn calculate_clues(&mut self) {
         self.row_clues.clear();
         self.col_clues.clear();
 
-        // 计算行提示（基于答案网格）
+        // 计算行提示
         for i in 0..self.grid_size {
             let mut clues = Vec::new();
             let mut count = 0;
@@ -93,7 +95,7 @@ impl NonogramsApp {
             self.row_clues.push(clues);
         }
 
-        // 计算列提示（基于答案网格）
+        // 计算列提示
         for j in 0..self.grid_size {
             let mut clues = Vec::new();
             let mut count = 0;
@@ -119,7 +121,7 @@ impl NonogramsApp {
         }
     }
 
-    // 检查玩家填充的单元格是否与答案一致
+    /// 检查玩家填充的单元格是否与答案一致
     fn check_win(&mut self) {
         for i in 0..self.grid_size {
             for j in 0..self.grid_size {
@@ -134,6 +136,7 @@ impl NonogramsApp {
         self.game_won = true;
     }
 
+    /// 点击控制 
     fn handle_cell_click(&mut self, row: usize, col: usize, button: egui::PointerButton) {
         if self.game_won {
             return;
@@ -194,7 +197,7 @@ impl eframe::App for NonogramsApp {
                             .join("\n");
 
                         ui.vertical(|ui| {
-                            ui.add_sized([30.0, 30.0], egui::Label::new(clues_text));
+                            ui.add_sized([15.0, 15.0], egui::Label::new(clues_text));
                         });
                     }
                     ui.end_row();
